@@ -5,12 +5,15 @@ import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class ItemPedido implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	// TODO necessita de uma chave composta
+	@JsonIgnore
 	@EmbeddedId
 	private ItemPedidoPK id = new ItemPedidoPK();
 	
@@ -28,6 +31,15 @@ public class ItemPedido implements Serializable {
 		this.desconto = desconto;
 		this.quantidade = quantidade;
 		this.preco = preco;
+	}
+	
+	@JsonIgnore
+	public Pedido getPedido() {
+		return id.getPedido();
+	}
+	
+	public Produto getProduto() {
+		return id.getProduto();
 	}
 
 	public ItemPedidoPK getId() {
@@ -60,14 +72,6 @@ public class ItemPedido implements Serializable {
 
 	public void setPreco(Double preco) {
 		this.preco = preco;
-	}
-	
-	public Pedido getPedido() {
-		return id.getPedido();
-	}
-	
-	public Produto getProduto() {
-		return id.getProduto();
 	}
 
 	@Override

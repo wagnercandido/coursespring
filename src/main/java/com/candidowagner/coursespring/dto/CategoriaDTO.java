@@ -2,6 +2,9 @@ package com.candidowagner.coursespring.dto;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.NotEmpty;
+
 import com.candidowagner.coursespring.domain.Categoria;
 
 public class CategoriaDTO implements Serializable {
@@ -9,6 +12,9 @@ public class CategoriaDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Integer id;
+	
+	@NotEmpty(message = "Preenchimento obrigatório") // TODO Atenção para a importação do javax.validation
+	@Length(min=5, max=80, message = "Tamanho inválido")
 	private String nome;
 	
 	public CategoriaDTO() {

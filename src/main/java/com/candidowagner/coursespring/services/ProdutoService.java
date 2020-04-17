@@ -24,6 +24,8 @@ public class ProdutoService {
 	
 	@Autowired
 	private CategoriaRepository categoriaRepository;
+	
+	
 
 	public Produto getByID(Integer id) {
 		Optional<Produto> obj = repository.findById(id);

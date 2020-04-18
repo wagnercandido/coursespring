@@ -21,45 +21,51 @@ public class PedidoService {
 
 	@Autowired
 	private PedidoRepository repository;
-	
+
 	@Autowired
 	private BoletoService boletoService;
-	
+
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
-	
+
 	@Autowired
 	private ProdutoService produtoService;
-	
+
 	@Autowired
 	private ItemPedidoRepository itemPedidoRepository;
+	
+	@Autowired
+	private ClienteService clienteService;
 
 	public Pedido getByID(Integer id) {
 		Optional<Pedido> obj = repository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Pedido.class.getName()));
 	}
-	
+
 	@Transactional
 	public Pedido save(Pedido obj) {
 		obj.setId(null);
 		obj.setInstante(new Date());
+		obj.setCliente(clienteService.getByID(obj.getCliente().getId()));
 		obj.getPagamento().setEstado(EstadoPagamento.PENDENTE);
 		obj.getPagamento().setPedido(obj);
-		if(obj.getPagamento() instanceof PagamentoBoleto) {
+		if (obj.getPagamento() instanceof PagamentoBoleto) {
 			PagamentoBoleto pagamento = (PagamentoBoleto) obj.getPagamento();
 			boletoService.preencherPagamentoComBoleto(pagamento, obj.getInstante());
 		}
 		obj = repository.save(obj);
 		pagamentoRepository.save(obj.getPagamento());
-		
-		for (ItemPedido item: obj.getItens()) {
+
+		for (ItemPedido item : obj.getItens()) {
 			item.setDesconto(0.0);
-			item.setPreco(produtoService.getByID(item.getProduto().getId()).getPreco());
+			item.setProduto(produtoService.getByID(item.getProduto().getId()));
+			item.setPreco(item.getProduto().getPreco());
 			item.setPedido(obj);
 		}
-		
+
 		itemPedidoRepository.saveAll(obj.getItens());
+		System.out.println(obj);
 		return obj;
 	}
 

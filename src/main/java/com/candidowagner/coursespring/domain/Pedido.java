@@ -1,8 +1,11 @@
 package com.candidowagner.coursespring.domain;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -25,8 +28,8 @@ public class Pedido implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
-	@JsonFormat(pattern="dd/MM/yyyy HH:mm")
+
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date instante;
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido") // TODO Assim o id do pagamento será o id do pedido
@@ -39,7 +42,7 @@ public class Pedido implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "endereco_de_entrega_id")
 	private Endereco endereco;
-	
+
 	@OneToMany(mappedBy = "id.pedido")
 	private Set<ItemPedido> itens = new HashSet<>();
 
@@ -53,7 +56,7 @@ public class Pedido implements Serializable {
 		this.cliente = cliente;
 		this.endereco = endereco;
 	}
-	
+
 	public Double getValorTotal() {
 		Double soma = 0.0;
 		for (ItemPedido itemPedido : itens) {
@@ -101,11 +104,11 @@ public class Pedido implements Serializable {
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
 	}
-	
+
 	public Set<ItemPedido> getItens() {
 		return itens;
 	}
-	
+
 	public void setItens(Set<ItemPedido> itens) {
 		this.itens = itens;
 	}
@@ -133,6 +136,28 @@ public class Pedido implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		SimpleDateFormat sDateFormate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		StringBuilder builder = new StringBuilder();
+		builder.append("Pedido número: ");
+		builder.append(getId());
+		builder.append("\nInstante: ");
+		builder.append(sDateFormate.format(getInstante()));
+		builder.append("\n\nCliente: ");
+		builder.append(getCliente().getNome());
+		builder.append("    -    Situação do pagamento: ");
+		builder.append(getPagamento().getEstado().getDescricao());
+		builder.append("\n\n\nDetalhes do Pedido:\n\n");
+		for (ItemPedido item : getItens()) {
+			builder.append(item.toString());
+		}
+		builder.append("\n\nValor total:");
+		builder.append(numberFormat.format(getValorTotal()));
+		return builder.toString();
 	}
 
 }

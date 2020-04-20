@@ -25,6 +25,7 @@ import com.candidowagner.coursespring.domain.PagamentoCartao;
 import com.candidowagner.coursespring.domain.Pedido;
 import com.candidowagner.coursespring.domain.Produto;
 import com.candidowagner.coursespring.domain.enums.EstadoPagamento;
+import com.candidowagner.coursespring.domain.enums.Perfil;
 import com.candidowagner.coursespring.domain.enums.TipoCliente;
 import com.candidowagner.coursespring.repositories.CategoriaRepository;
 import com.candidowagner.coursespring.repositories.CidadeRepository;
@@ -169,16 +170,24 @@ public class TestConfig implements CommandLineRunner {
 				encodePassword.encode("123"));
 
 		cliente1.getTelefones().addAll(Arrays.asList("11988976431", "11998746532"));
+		
+		Cliente cliente2 = new Cliente(null, "Ana Costa", "anac@email.com", "53485989096", TipoCliente.PESSOA_FISICA,
+				encodePassword.encode("123"));
+		cliente2.addPerfil(Perfil.ADMIN);
+		cliente2.getTelefones().addAll(Arrays.asList("11984576431", "11548746532"));
 
 		Endereco endereco1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim Botânico", "58021456",
 				cliente1, cidade1);
 		Endereco endereco2 = new Endereco(null, "Avenida Matos", "105", "Sala 100", "Centro", "58028526", cliente1,
 				cidade2);
+		Endereco endereco3 = new Endereco(null, "Avenida Floriano", "11105", "Sala 300", "Pirâmide", "58028526", cliente2,
+				cidade2);
 
 		cliente1.getEnderecos().addAll(Arrays.asList(endereco1, endereco2));
+		cliente2.getEnderecos().addAll(Arrays.asList(endereco3));
 
-		clienteRepository.saveAll(Arrays.asList(cliente1));
-		enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2));
+		clienteRepository.saveAll(Arrays.asList(cliente1, cliente2));
+		enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2, endereco3));
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy HH:mm");
 

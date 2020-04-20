@@ -26,6 +26,9 @@ public class ClienteFullDTO implements Serializable {
 	private String documento;
 	
 	private Integer tipo;
+	
+	@NotEmpty(message = "Senha obrigatória")
+	private String senha;
 
 	@NotEmpty(message = "Preenchimento obrigatório")
 	private String logradouro;
@@ -81,6 +84,14 @@ public class ClienteFullDTO implements Serializable {
 
 	public void setTipo(Integer tipo) {
 		this.tipo = tipo;
+	}
+	
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 	public String getLogradouro() {
@@ -154,5 +165,5 @@ public class ClienteFullDTO implements Serializable {
 	public void setCidadeID(Integer cidadeID) {
 		this.cidadeID = cidadeID;
 	}
-	
+
 }

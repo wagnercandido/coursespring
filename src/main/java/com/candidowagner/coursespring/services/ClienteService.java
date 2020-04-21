@@ -15,17 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.candidowagner.coursespring.domain.Cidade;
 import com.candidowagner.coursespring.domain.Cliente;
 import com.candidowagner.coursespring.domain.Endereco;
+import com.candidowagner.coursespring.domain.enums.Perfil;
 import com.candidowagner.coursespring.domain.enums.TipoCliente;
 import com.candidowagner.coursespring.dto.ClienteDTO;
 import com.candidowagner.coursespring.dto.ClienteFullDTO;
 import com.candidowagner.coursespring.repositories.ClienteRepository;
 import com.candidowagner.coursespring.repositories.EnderecoRepository;
+import com.candidowagner.coursespring.security.UserSS;
+import com.candidowagner.coursespring.services.exceptions.AuthorizationException;
 import com.candidowagner.coursespring.services.exceptions.DataIntegrityException;
 import com.candidowagner.coursespring.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class ClienteService {
-	
+
 	@Autowired
 	private BCryptPasswordEncoder encodePassword;
 
@@ -36,6 +39,12 @@ public class ClienteService {
 	private EnderecoRepository enderecoRepository;
 
 	public Cliente getByID(Integer id) {
+
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso Negado!");
+		}
+
 		Optional<Cliente> obj = repository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));

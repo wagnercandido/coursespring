@@ -4,9 +4,13 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.candidowagner.coursespring.domain.Cliente;
 import com.candidowagner.coursespring.domain.ItemPedido;
 import com.candidowagner.coursespring.domain.PagamentoBoleto;
 import com.candidowagner.coursespring.domain.Pedido;
@@ -14,6 +18,8 @@ import com.candidowagner.coursespring.domain.enums.EstadoPagamento;
 import com.candidowagner.coursespring.repositories.ItemPedidoRepository;
 import com.candidowagner.coursespring.repositories.PagamentoRepository;
 import com.candidowagner.coursespring.repositories.PedidoRepository;
+import com.candidowagner.coursespring.security.UserSS;
+import com.candidowagner.coursespring.services.exceptions.AuthorizationException;
 import com.candidowagner.coursespring.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -70,6 +76,18 @@ public class PedidoService {
 		itemPedidoRepository.saveAll(obj.getItens());
 		emailService.enviarConfirmacaoPedidoHtmlEmail(obj);
 		return obj;
+	}
+	
+	public Page<Pedido> getPagitator(Integer page, Integer linesPerPage, String orderBy, String direction) {
+		
+		UserSS user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso Negado!");
+		}
+		
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction) , orderBy);
+		Cliente cliente = clienteService.getByID(user.getId());
+		return repository.findByCliente(cliente, pageRequest);
 	}
 
 }

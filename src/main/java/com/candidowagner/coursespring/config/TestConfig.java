@@ -37,16 +37,12 @@ import com.candidowagner.coursespring.repositories.PagamentoRepository;
 import com.candidowagner.coursespring.repositories.PedidoRepository;
 import com.candidowagner.coursespring.repositories.ProdutoRepository;
 import com.candidowagner.coursespring.services.EmailService;
-import com.candidowagner.coursespring.services.S3Service;
 import com.candidowagner.coursespring.services.SmtpEmailService;
 
 @Configuration
 @Profile("test")
 public class TestConfig implements CommandLineRunner {
 	
-	@Autowired
-	private S3Service s3Service;
-
 	@Autowired
 	private BCryptPasswordEncoder encodePassword;
 
@@ -100,8 +96,6 @@ public class TestConfig implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
-		s3Service.uploadFile("C:\\wagner\\images\\ead.jpg");
-
 		Categoria cat1 = new Categoria(null, "Informática");
 		Categoria cat2 = new Categoria(null, "Escritório");
 		Categoria cat3 = new Categoria(null, "Cama mesa e balho");

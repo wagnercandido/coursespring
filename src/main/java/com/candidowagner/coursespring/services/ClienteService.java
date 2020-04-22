@@ -1,10 +1,12 @@
 package com.candidowagner.coursespring.services;
 
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +32,9 @@ import com.candidowagner.coursespring.services.exceptions.ObjectNotFoundExceptio
 
 @Service
 public class ClienteService {
+	
+	@Value("${img.prefix.client.profile}")
+	private String prefixoCliente;
 
 	@Autowired
 	private BCryptPasswordEncoder encodePassword;
@@ -42,6 +47,9 @@ public class ClienteService {
 	
 	@Autowired
 	private S3Service s3Service;
+	
+	@Autowired
+	private ImageService imageService;
 
 	public Cliente getByID(Integer id) {
 
@@ -115,18 +123,16 @@ public class ClienteService {
 	}
 	
 	public URI uploadPhotoProfile(MultipartFile multiPartFile) {
+		
 		UserSS user = UserService.authenticated();
 		if(user == null) {
 			throw new AuthorizationException("Acesso Negado!"); 
 		}
 		
-		URI uri = s3Service.uploadFile(multiPartFile);
+		BufferedImage imagemJpg = imageService.getJpgImageFromFile(multiPartFile);
+		String fileName = prefixoCliente + user.getId() + ".jpg";
 		
-		Cliente cliente = getByID(user.getId());
-		cliente.setImagemUrl(uri.toString());
-		repository.save(cliente);
-		
-		return uri; 
+		return s3Service.uploadFile(imageService.getInputStream(imagemJpg, "jpg"), fileName, "image"); 
 	}
 
 }

@@ -32,14 +32,14 @@ public class S3Service {
 			String fileName = multiPartFile.getOriginalFilename();
 			InputStream inputStream = multiPartFile.getInputStream();
 			String contentType = multiPartFile.getContentType();
-			return uploadFile(fileName, inputStream, contentType);
+			return uploadFile(inputStream, fileName, contentType);
 		} catch (IOException e) {
 			throw new FileException("AmazonClientException" + e.getMessage());
 		}
 
 	}
 
-	public URI uploadFile(String fileName, InputStream inputStream, String contentType) {
+	public URI uploadFile(InputStream inputStream, String fileName, String contentType) {
 		try {
 			ObjectMetadata metaData = new ObjectMetadata();
 			metaData.setContentType(contentType);

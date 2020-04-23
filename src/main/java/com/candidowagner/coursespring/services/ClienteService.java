@@ -35,6 +35,9 @@ public class ClienteService {
 	
 	@Value("${img.prefix.client.profile}")
 	private String prefixoCliente;
+	
+	@Value("${img.profile.size}")
+	private Integer size;
 
 	@Autowired
 	private BCryptPasswordEncoder encodePassword;
@@ -130,6 +133,10 @@ public class ClienteService {
 		}
 		
 		BufferedImage imagemJpg = imageService.getJpgImageFromFile(multiPartFile);
+		
+		imagemJpg = imageService.cropSquare(imagemJpg);
+		imagemJpg = imageService.resize(imagemJpg, size);
+		
 		String fileName = prefixoCliente + user.getId() + ".jpg";
 		
 		return s3Service.uploadFile(imageService.getInputStream(imagemJpg, "jpg"), fileName, "image"); 

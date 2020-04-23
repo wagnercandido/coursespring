@@ -92,6 +92,20 @@ public class ClienteService {
 	public List<Cliente> getAll() {
 		return repository.findAll();
 	}
+	
+	public Cliente getByEmail(String email) {
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasRole(Perfil.ADMIN) && !email.equals(user.getUsername())) {
+			throw new AuthorizationException("Acesso Negado!");
+		}
+		
+		Cliente obj = repository.findByEmail(email);
+		if (obj==null) {
+			throw new ObjectNotFoundException(
+					"Objeto não encontrado! Id: " + user.getId() + ", Tipo: " + Cliente.class.getName());
+		}
+		return obj;
+	}
 
 	public Page<Cliente> getPagitator(Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);

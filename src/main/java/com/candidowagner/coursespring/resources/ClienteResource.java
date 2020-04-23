@@ -37,6 +37,12 @@ public class ClienteResource {
 		return ResponseEntity.ok().body(obj);
 	}
 	
+	@RequestMapping(value = "/email", method = RequestMethod.GET)
+	public ResponseEntity<Cliente> buscarPorID(@RequestParam(value="email") String email) {
+		Cliente obj = service.getByEmail(email);
+		return ResponseEntity.ok().body(obj);
+	}
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> salvar(@Valid @RequestBody ClienteFullDTO objDto) {
 		Cliente obj = service.fromDTO(objDto);

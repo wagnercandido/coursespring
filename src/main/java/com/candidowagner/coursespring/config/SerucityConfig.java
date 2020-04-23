@@ -42,6 +42,7 @@ public class SerucityConfig extends WebSecurityConfigurerAdapter {
 	private static final String[] PUBLIC_ROUTES_GET = { 
 			"/produtos/**",
 			"/categorias/**", 
+			"/estados/**", 
 	};
 	
 	private static final String[] PUBLIC_ROUTES_POST = { 

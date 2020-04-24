@@ -22,6 +22,10 @@ import com.candidowagner.coursespring.domain.Categoria;
 import com.candidowagner.coursespring.dto.CategoriaDTO;
 import com.candidowagner.coursespring.services.CategoriaService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping(value = "/categorias")
 public class CategoriaResource {
@@ -29,11 +33,14 @@ public class CategoriaResource {
 	@Autowired
 	private CategoriaService service;
 
+	@ApiOperation(value = "Buscar Categoria por id")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Categoria> buscarPorID(@PathVariable Integer id) {
 		Categoria obj = service.getByID(id);
 		return ResponseEntity.ok().body(obj);
 	}
+
+	@ApiOperation(value = "Salvar nova Categoria")
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method = RequestMethod.POST)
@@ -44,6 +51,7 @@ public class CategoriaResource {
 		return ResponseEntity.created(uri).build();
 	}
 
+	@ApiOperation(value = "Editar Categoria")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> editar(@Valid @RequestBody CategoriaDTO objDto, @PathVariable Integer id) {
@@ -53,6 +61,10 @@ public class CategoriaResource {
 		return ResponseEntity.noContent().build();
 	}
 
+	@ApiOperation(value = "Remover Categoria")
+	@ApiResponses(value = {
+			@ApiResponse(code = 400, message = "Não é possível excluir uma categoria que possui produtos"),
+			@ApiResponse(code = 404, message = "Código inexistente") })
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> remover(@PathVariable Integer id) {
@@ -60,6 +72,7 @@ public class CategoriaResource {
 		return ResponseEntity.noContent().build();
 	}
 
+	@ApiOperation(value = "Obter uma lista de Categoria")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<CategoriaDTO>> listar() {
 		List<Categoria> lista = service.getAll();
@@ -67,6 +80,7 @@ public class CategoriaResource {
 		return ResponseEntity.ok().body(retorno);
 	}
 
+	@ApiOperation(value = "Obter uma lista paginada de Categoria")
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
 	public ResponseEntity<Page<CategoriaDTO>> listarPaginator(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,

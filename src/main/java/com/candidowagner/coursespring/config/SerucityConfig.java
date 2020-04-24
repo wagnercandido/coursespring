@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,9 +40,16 @@ public class SerucityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String[] PUBLIC_ROUTES = { "/h2-console/**", };
 
-	private static final String[] PUBLIC_ROUTES_GET = { "/produtos/**", "/categorias/**", "/estados/**", };
+	private static final String[] PUBLIC_ROUTES_GET = { 
+			"/produtos/**", 
+			"/categorias/**", 
+			"/estados/**", 
+	};
 
-	private static final String[] PUBLIC_ROUTES_POST = { "/clientes/**", "/auth/forgot/**", };
+	private static final String[] PUBLIC_ROUTES_POST = { 
+			"/clientes/**", 
+			"/auth/forgot/**"
+	};
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -51,11 +59,19 @@ public class SerucityConfig extends WebSecurityConfigurerAdapter {
 		}
 
 		http.cors().and().csrf().disable();
-		http.authorizeRequests().antMatchers(PUBLIC_ROUTES).permitAll().antMatchers(HttpMethod.POST, PUBLIC_ROUTES_POST)
-				.permitAll().antMatchers(HttpMethod.GET, PUBLIC_ROUTES_GET).permitAll().anyRequest().authenticated();
+		http.authorizeRequests().antMatchers(PUBLIC_ROUTES).permitAll()
+				.antMatchers(HttpMethod.POST, PUBLIC_ROUTES_POST).permitAll()
+				.antMatchers(HttpMethod.GET, PUBLIC_ROUTES_GET).permitAll()
+				.anyRequest().authenticated();
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 		http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	}
+	
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**",
+				"/swagger-ui.html", "/webjars/**");
 	}
 
 	@Override
